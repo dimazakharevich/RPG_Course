@@ -12,11 +12,11 @@ namespace PRG.Control
         // Update is called once per frame
         void Update()
         {
-            InteractWithMovement();
-            InteractWithCombat();
+            if (InteractWithCombat()) return;
+            if (InteractWithMovement()) return;
         }
 
-        public void InteractWithCombat()
+        public bool InteractWithCombat()
         {
             RaycastHit[] hits = Physics.RaycastAll(GetMouseRay());
             foreach(RaycastHit hit in hits)
@@ -27,25 +27,24 @@ namespace PRG.Control
                 {
                     GetComponent<Fighter>().Attack(target);
                 }
+                return true;
             }
+            return false;
         }
 
-        private void InteractWithMovement()
+        private bool InteractWithMovement()
         {
-            if (Input.GetMouseButton(0))
-            {
-                MoveToCursor();
-            }
-        }
-
-        private void MoveToCursor()
-        {
-            RaycastHit hit;
-            bool hasHit = Physics.Raycast(GetMouseRay(), out hit);
-            if (hasHit)
-            {
-                GetComponent<Mover>().MoveTo(hit.point);
-            }
+                RaycastHit hit;
+                bool hasHit = Physics.Raycast(GetMouseRay(), out hit);
+                if (hasHit)
+                {
+                    if (Input.GetMouseButton(0))
+                    {
+                        GetComponent<Mover>().MoveTo(hit.point);
+                    }
+                return true;
+                }
+            return false;
         }
 
         private static Ray GetMouseRay()
